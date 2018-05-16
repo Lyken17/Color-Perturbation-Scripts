@@ -12,6 +12,7 @@ dst_dir = src_dir + "_disturbed"
 rec_dir = src_dir + "_recovered"
 noi_dir = rec_dir = src_dir + "_noise"
 
+
 def create_if_not_exist(temp):
     if isinstance(temp, str):
         if not os.path.exists(temp):
@@ -23,11 +24,13 @@ def create_if_not_exist(temp):
     else:
         raise NotImplementedError
 
+
 create_if_not_exist([mid_dir, dst_dir, rec_dir, noi_dir])
 
 resize_ratio = 0.15
 
 t_global = 0.5
+
 
 def run_one_images(f):
     if not (f.endswith(".jpg") or f.endswith(".jpeg")):
@@ -48,7 +51,7 @@ def run_one_images(f):
         img[0, 0, 2]
     except IndexError:
         return
-    scipy.misc.imsave(osp.join(mid_dir,  f.replace(".", "-%d." % notion)), img)
+    scipy.misc.imsave(osp.join(mid_dir, f.replace(".", "-%d." % notion)), img)
     return
     if np.random.uniform(-0.5, 0.5) > 0:
         # if 1 > 0:
@@ -108,8 +111,9 @@ def run_one_images(f):
         img = img / maxV
 
     # noise = np.ones_like(img)  * 127
-    scipy.misc.imsave(osp.join(dst_dir,  f.replace(".", "-%d." % notion)), img)
-    scipy.misc.imsave(osp.join(noi_dir,  f.replace(".", "-%d." % notion)), noise)
+    scipy.misc.imsave(osp.join(dst_dir, f.replace(".", "-%d." % notion)), img)
+    scipy.misc.imsave(osp.join(noi_dir, f.replace(".", "-%d." % notion)), noise)
+
 
 def opencv_save(folder, image):
     from scipy.misc import imsave
@@ -117,6 +121,7 @@ def opencv_save(folder, image):
     # destRGB = cv2.cvtColor(srcRGB, cv2.COLOR_BGR2RGB)
     # cv2.imwrite(folder, destRGB)
     imsave(folder, image.astype(np.uint8))
+
 
 for notion in range(1, 8):
     for root, dirs, filenames in os.walk(src_dir):
@@ -140,10 +145,10 @@ for notion in range(1, 8):
             except IndexError:
                 continue
 
-            opencv_save(osp.join(mid_dir,  f.replace(".", "-%d." % notion)).replace(".jpg", ".png"), img)
+            opencv_save(osp.join(mid_dir, f.replace(".", "-%d." % notion)).replace(".jpg", ".png"), img)
 
             if np.random.uniform(-0.5, 0.5) > 0:
-            # if 1 > 0:
+                # if 1 > 0:
                 ratio = 0.5
                 disturb = np.random.uniform(0.6, 1.4)
                 # disturb = ratio
@@ -191,7 +196,6 @@ for notion in range(1, 8):
                 img[:, :, 2] = np.dot(img[:, :, 2], disturb)
                 noise[:, :, 2] = np.dot(noise[:, :, 2], disturb)
 
-
             # img[img > 255] = 255
             # img[img < 0] = 0
             # noise[noise > 255] = 255
@@ -200,15 +204,15 @@ for notion in range(1, 8):
                 maxV = img.max()
                 img = img / (maxV / 255.0)
             # noise = np.ones_like(img)  * 127
-            opencv_save(osp.join(dst_dir,  f.replace(".", "-%d." % notion)).replace(".jpg", ".png"), img)
-            opencv_save(osp.join(noi_dir,  f.replace(".", "-%d." % notion)).replace(".jpg", ".png"), noise)
+            opencv_save(osp.join(dst_dir, f.replace(".", "-%d." % notion)).replace(".jpg", ".png"), img)
+            opencv_save(osp.join(noi_dir, f.replace(".", "-%d." % notion)).replace(".jpg", ".png"), noise)
 
-            Rmin = np.min(noise[:,:, 0])
-            Gmin = np.min(noise[:,:, 1])
-            Bmin = np.min(noise[:,:, 2])
+            Rmin = np.min(noise[:, :, 0])
+            Gmin = np.min(noise[:, :, 1])
+            Bmin = np.min(noise[:, :, 2])
             print("Rmin:%.2f Gmin:%.2f Bmin:%.2f\n" %
-                    (Rmin, Gmin, Bmin)
-                )
+                  (Rmin, Gmin, Bmin)
+                  )
             assert Rmin > 0
             assert Gmin > 0
             assert Bmin > 0
